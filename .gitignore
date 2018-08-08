@@ -1,0 +1,17 @@
+.DS_Store
+*.iml
+*.dex
+*.class
+*.apk
+*.ap_
+*.log
+bin/
+gen/
+.gradle/
+/build
+local.properties
+.idea/*
+!.idea/codeStyleSettings.xml
+!.idea/dictionaries/
+/captures
+firebase-crashreporting.json
