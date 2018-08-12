@@ -1,7 +1,7 @@
 package ru.rinekri.devfest2018.delegates
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import ru.rinekri.devfest2018.R
 
 class DucksDelegatesActivity : AppCompatActivity() {
