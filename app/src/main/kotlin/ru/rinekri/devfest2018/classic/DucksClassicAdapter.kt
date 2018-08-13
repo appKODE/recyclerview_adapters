@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import ru.rinekri.devfest2018.R
@@ -23,7 +22,6 @@ class DucksClassicAdapter(
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     val duck = data[position]
-    holder.divider.isVisible = position != 0
     holder.rubberDuckImage.apply {
       Picasso.get()
         .load(duck.icon)
@@ -42,6 +40,5 @@ class DucksClassicAdapter(
   class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val rubberDuckImage: ImageView = view.findViewById(R.id.rubberDuckImage)
     val clicksHolder: View = view.findViewById(R.id.clicksHolder)
-    val divider: View = view.findViewById(R.id.divider)
   }
 }

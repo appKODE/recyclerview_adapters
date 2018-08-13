@@ -17,7 +17,7 @@ class DucksClassicActivity : AppCompatActivity() {
     findViewById<RecyclerView>(R.id.duckList).apply {
       layoutManager = LinearLayoutManager(this@DucksClassicActivity)
       adapter = DucksClassicAdapter(
-        data = DucksMockData.data.orEmpty(),
+        data = DucksMockData.data.orEmpty().shuffled(),
         onDuckClickAction = { Timber.e("duck = $it") }
       )
     }

@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
-    <View
-        android:id="@+id/divider"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorAccent" />
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/rubberDuckImage"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider"
-        tools:src="@drawable/duck_stub" />
+        <ImageView
+            android:id="@+id/rubberDuckImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="6dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@drawable/duck_stub" />
 
-    <View
-        android:id="@+id/clicksHolder"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <View
+            android:id="@+id/clicksHolder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Rubber Duck"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/rubberDuckImage"
+            app:layout_constraintStart_toEndOf="@+id/rubberDuckImage"
+            app:layout_constraintTop_toTopOf="@+id/rubberDuckImage" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
