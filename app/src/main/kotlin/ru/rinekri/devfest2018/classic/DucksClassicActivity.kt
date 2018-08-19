@@ -1,13 +1,13 @@
 package ru.rinekri.devfest2018.classic
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-import ru.rinekri.devfest2018.DucksMockData
+import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
-import timber.log.Timber
+import ru.rinekri.devfest2018.models.Duck
 
 class DucksClassicActivity : AppCompatActivity() {
 
@@ -17,9 +17,22 @@ class DucksClassicActivity : AppCompatActivity() {
     findViewById<RecyclerView>(R.id.duckList).apply {
       layoutManager = LinearLayoutManager(this@DucksClassicActivity)
       adapter = DucksClassicAdapter(
-        data = DucksMockData.data.orEmpty().shuffled(),
-        onDuckClickAction = { Timber.e("duck = $it") }
+        data = getDucks(),
+        onDuckClickAction = {
+          AlertDialog
+            .Builder(this@DucksClassicActivity)
+            .setTitle("Спасибо!")
+            .setMessage("Ваша заявка принята и ожидает обработки.")
+            .setPositiveButton("Хорошо", null)
+            .show()
+        }
       )
     }
+  }
+
+  private fun getDucks(): List<Duck> {
+    val rubberDucks = DuckMockData.ducks.orEmpty()
+    val duckSlippers = DuckMockData.slippers.orEmpty()
+    return rubberDucks.plus(duckSlippers).shuffled()
   }
 }

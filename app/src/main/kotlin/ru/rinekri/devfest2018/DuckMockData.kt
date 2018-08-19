@@ -2,12 +2,13 @@ package ru.rinekri.devfest2018
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import ru.rinekri.devfest2018.models.Duck
+import ru.rinekri.devfest2018.models.DuckSlipper
+import ru.rinekri.devfest2018.models.RubberDuck
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-object DucksMockData {
-  private const val jsonData = """ [
+object DuckMockData {
+  private const val rubberDucksJson = """ [
   {
     "icon": "file:///android_asset/ducks/0f2b2bd3874567d7abeb673f6fb399d9.jpg"
   },
@@ -147,11 +148,53 @@ object DucksMockData {
     "icon": "file:///android_asset/ducks/fde0b5353f1b6b18721eb88a5b21293f.jpg"
   }
 ] """
-  val data: List<Duck>? by lazy {
+  private const val duckSlippersJson = """ [
+  {
+    "size": "XS",
+    "icon": "file:///android_asset/slippers/712RzcG5xuL._UX569_.jpg"
+  },
+  {
+    "size": "S",
+    "icon": "file:///android_asset/slippers/716LAvMAEBL._UY500_.jpg"
+  },
+  {
+    "size": "L",
+    "icon": "file:///android_asset/slippers/forever-21-YELLOW-Duck-Indoor-Slippers.jpeg"
+  },
+  {
+    "size": "XS",
+    "icon": "file:///android_asset/slippers/home-shoes-yellow-duck-slippers-for-adult-no-heel-97139.jpg"
+  },
+  {
+    "size": "XXL",
+    "icon": "file:///android_asset/slippers/il_fullxfull.702533548_w9ai.jpg"
+  },
+  {
+    "size": "XL",
+    "icon": "file:///android_asset/slippers/slippers1.jpeg"
+  },
+  {
+    "size": "XL",
+    "icon": "file:///android_asset/slippers/slippers2.jpeg"
+  },
+  {
+    "size": "L",
+    "icon": "file:///android_asset/slippers/thumbnail_duck_slippers.jpg"
+  }
+]
+"""
+  val ducks: List<RubberDuck>? by lazy {
     Moshi.Builder()
       .build()
-      .adapter<List<Duck>>(List::class.java.withTypes(Duck::class.java))
-      .fromJson(jsonData)
+      .adapter<List<RubberDuck>>(List::class.java.withTypes(RubberDuck::class.java))
+      .fromJson(rubberDucksJson)
+  }
+
+  val slippers: List<DuckSlipper>? by lazy {
+    Moshi.Builder()
+      .build()
+      .adapter<List<DuckSlipper>>(List::class.java.withTypes(DuckSlipper::class.java))
+      .fromJson(duckSlippersJson)
   }
 
   private fun Type.withTypes(vararg types: Type): ParameterizedType = Types.newParameterizedType(this, *types)
