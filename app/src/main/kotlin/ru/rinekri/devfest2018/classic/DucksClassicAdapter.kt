@@ -29,7 +29,7 @@ class DucksClassicAdapter(
         DuckViewHolder(view)
       }
       else -> {
-        val view = parent.context.inflate(R.layout.item_slipper_duck, parent)
+        val view = parent.context.inflate(R.layout.item_duck_slipper, parent)
         SlipperViewHolder(view)
       }
     }
