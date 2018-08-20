@@ -16,6 +16,7 @@ import ru.rinekri.devfest2018.models.RubberDuck
 
 private const val VIEW_TYPE_RUBBER_DUCK: Int = 1
 private const val VIEW_TYPE_SLIPPER_DUCK: Int = 2
+private const val VIEW_TYPE_HEADER: Int = 3
 
 class DucksClassicAdapter(
   private val data: List<Duck>,
@@ -28,10 +29,15 @@ class DucksClassicAdapter(
         val view = parent.context.inflate(R.layout.item_rubber_duck, parent)
         DuckViewHolder(view)
       }
-      else -> {
+      VIEW_TYPE_SLIPPER_DUCK -> {
         val view = parent.context.inflate(R.layout.item_duck_slipper, parent)
         SlipperViewHolder(view)
       }
+      VIEW_TYPE_HEADER -> {
+        val view = parent.context.inflate(R.layout.item_header, parent)
+        Header(view)
+      }
+      else -> throw UnsupportedOperationException("view type $viewType without layout")
     }
   }
 
@@ -86,5 +92,10 @@ class DucksClassicAdapter(
     val duckSlipperImage: ImageView = view.findViewById(R.id.duckSlipperImage)
     val duckSlipperSize: TextView = view.findViewById(R.id.duckSlipperSize)
     val clicksHolder: View = view.findViewById(R.id.clicksHolder)
+  }
+
+  class Header(view: View) : RecyclerView.ViewHolder(view) {
+    val title: ImageView = view.findViewById(R.id.headerTitle)
+    val arrow: TextView = view.findViewById(R.id.headerArrow)
   }
 }
