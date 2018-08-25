@@ -22,32 +22,23 @@ class DucksClassicAdapter(
   private val onDuckClickAction: (Duck) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
   var data: List<Duck> = emptyList()
     set(value) {
       field = value
-      groupedData = data.groupBy { it.javaClass.kotlin }
-        .flatMap {
-          val titleRes = when (it.key) {
+      internalData = data.groupBy { it.javaClass.kotlin }
+        .flatMap { groupedDucks ->
+          val titleRes = when (groupedDucks.key) {
             DuckSlipper::class -> R.string.slippers
             RubberDuck::class -> R.string.rubber_ducks
-            else -> throw UnsupportedOperationException("DADADada")
+            else -> R.string.mixed_ducks
           }
-          listOf(FakeDuck(titleRes)).plus(it.value)
+          groupedDucks.value.let { listOf(FakeDuck(titleRes, it)).plus(it) }
         }
+        .toMutableList()
     }
 
-  private var groupedData: List<Duck> = emptyList()
+  private var internalData: MutableList<Duck> = mutableListOf()
   private var collapsedHeaders: MutableSet<Duck> = hashSetOf()
-
-//  private var groupedData: Map<Pair<Class<Duck>, Boolean>, List<Duck>> = emptyMap()
-//    set(value) {
-//      field = value
-//      value.forEach {
-//        Timber.tag("DUCK").e("${it.key}: ${it.value}")
-//      }
-//      notifyDataSetChanged()
-//    }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
     return when (viewType) {
@@ -63,7 +54,7 @@ class DucksClassicAdapter(
         val view = parent.context.inflate(R.layout.item_header, parent)
         Header(view)
       }
-      else -> throw UnsupportedOperationException("view type $viewType without layout")
+      else -> throw UnsupportedOperationException("view type $viewType without ViewHolder")
     }
   }
 
@@ -76,14 +67,8 @@ class DucksClassicAdapter(
   }
 
   private fun bindHeaderViewHolder(holder: Header, position: Int) {
-    val item = groupedData[position] as FakeDuck
-    holder.itemView.setOnClickListener {
-      if (collapsedHeaders.contains(groupedData[position])) {
-//        collapsedHeaders.
-      }
-      //      TODO: Логика скрытия
-    }
-//    val res = when(groupedData.ke)
+    val item = internalData[position] as FakeDuck
+    holder.clicksHolder.setOnClickListener { changeCollapseState(item, position) }
     val arrowRes = if (collapsedHeaders.contains(item))
       R.drawable.ic_keyboard_arrow_up_black_24dp
     else
@@ -92,9 +77,27 @@ class DucksClassicAdapter(
     holder.title.setText(item.titleRes)
   }
 
+  private fun changeCollapseState(item: FakeDuck, position: Int) {
+    val isCollapsed = collapsedHeaders.contains(item)
+    if (isCollapsed) {
+      collapsedHeaders.remove(item)
+    } else {
+      collapsedHeaders.add(item)
+    }
+    val startPosition = position + 1
+    if (isCollapsed) {
+      internalData.addAll(startPosition, item.items)
+      notifyItemRangeInserted(startPosition, item.items.count())
+    } else {
+      internalData.removeAll(item.items)
+      notifyItemRangeRemoved(startPosition, item.items.count())
+    }
+    notifyItemChanged(position)
+  }
+
   @SuppressLint("SetTextI18n")
   private fun bindSlipperViewHolder(holder: SlipperViewHolder, position: Int) {
-    val slipper = groupedData[position] as DuckSlipper
+    val slipper = internalData[position] as DuckSlipper
     holder.duckSlipperImage.showIcon(slipper.icon)
     holder.duckSlipperSize.text = "Размер: ${slipper.size}"
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(slipper) }
@@ -112,13 +115,13 @@ class DucksClassicAdapter(
   }
 
   private fun bindDuckViewHolder(holder: DuckViewHolder, position: Int) {
-    val duck = groupedData[position] as RubberDuck
+    val duck = internalData[position] as RubberDuck
     holder.rubberDuckImage.showIcon(duck.icon)
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(duck) }
   }
 
   override fun getItemViewType(position: Int): Int {
-    return when (groupedData[position]) {
+    return when (internalData[position]) {
       is FakeDuck -> VIEW_TYPE_HEADER
       is RubberDuck -> VIEW_TYPE_RUBBER_DUCK
       is DuckSlipper -> VIEW_TYPE_SLIPPER_DUCK
@@ -126,8 +129,7 @@ class DucksClassicAdapter(
     }
   }
 
-  override fun getItemCount() = groupedData.count()
-//  override fun getItemCount() = groupedData.keys.count() + groupedData.values.count()
+  override fun getItemCount() = internalData.count()
 
   class DuckViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val rubberDuckImage: ImageView = view.findViewById(R.id.rubberDuckImage)
@@ -143,7 +145,8 @@ class DucksClassicAdapter(
   class Header(view: View) : RecyclerView.ViewHolder(view) {
     val title: TextView = view.findViewById(R.id.headerTitle)
     val arrow: ImageView = view.findViewById(R.id.headerArrow)
+    val clicksHolder: View = view.findViewById(R.id.clicksHolder)
   }
 }
 
-private class FakeDuck(var titleRes: Int) : Duck
+private class FakeDuck(val titleRes: Int, val items: List<Duck>) : Duck
