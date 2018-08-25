@@ -17,7 +17,6 @@ class DucksClassicActivity : AppCompatActivity() {
     findViewById<RecyclerView>(R.id.duckList).apply {
       layoutManager = LinearLayoutManager(this@DucksClassicActivity)
       adapter = DucksClassicAdapter(
-        data = getDucks(),
         onDuckClickAction = {
           AlertDialog
             .Builder(this@DucksClassicActivity)
@@ -26,7 +25,9 @@ class DucksClassicActivity : AppCompatActivity() {
             .setPositiveButton("Хорошо", null)
             .show()
         }
-      )
+      ).apply {
+        data = getDucks()
+      }
     }
   }
 

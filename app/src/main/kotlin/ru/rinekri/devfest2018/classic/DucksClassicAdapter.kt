@@ -19,9 +19,35 @@ private const val VIEW_TYPE_SLIPPER_DUCK: Int = 2
 private const val VIEW_TYPE_HEADER: Int = 3
 
 class DucksClassicAdapter(
-  private val data: List<Duck>,
   private val onDuckClickAction: (Duck) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+
+  var data: List<Duck> = emptyList()
+    set(value) {
+      field = value
+      groupedData = data.groupBy { it.javaClass.kotlin }
+        .flatMap {
+          val titleRes = when (it.key) {
+            DuckSlipper::class -> R.string.slippers
+            RubberDuck::class -> R.string.rubber_ducks
+            else -> throw UnsupportedOperationException("DADADada")
+          }
+          listOf(FakeDuck(titleRes)).plus(it.value)
+        }
+    }
+
+  private var groupedData: List<Duck> = emptyList()
+  private var collapsedHeaders: MutableSet<Duck> = hashSetOf()
+
+//  private var groupedData: Map<Pair<Class<Duck>, Boolean>, List<Duck>> = emptyMap()
+//    set(value) {
+//      field = value
+//      value.forEach {
+//        Timber.tag("DUCK").e("${it.key}: ${it.value}")
+//      }
+//      notifyDataSetChanged()
+//    }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
     return when (viewType) {
@@ -43,14 +69,32 @@ class DucksClassicAdapter(
 
   override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     when (holder) {
+      is Header -> bindHeaderViewHolder(holder, position)
       is DuckViewHolder -> bindDuckViewHolder(holder, position)
       is SlipperViewHolder -> bindSlipperViewHolder(holder, position)
     }
   }
 
+  private fun bindHeaderViewHolder(holder: Header, position: Int) {
+    val item = groupedData[position] as FakeDuck
+    holder.itemView.setOnClickListener {
+      if (collapsedHeaders.contains(groupedData[position])) {
+//        collapsedHeaders.
+      }
+      //      TODO: Логика скрытия
+    }
+//    val res = when(groupedData.ke)
+    val arrowRes = if (collapsedHeaders.contains(item))
+      R.drawable.ic_keyboard_arrow_up_black_24dp
+    else
+      R.drawable.ic_keyboard_arrow_down_black_24dp
+    holder.arrow.setImageResource(arrowRes)
+    holder.title.setText(item.titleRes)
+  }
+
   @SuppressLint("SetTextI18n")
   private fun bindSlipperViewHolder(holder: SlipperViewHolder, position: Int) {
-    val slipper = data[position] as DuckSlipper
+    val slipper = groupedData[position] as DuckSlipper
     holder.duckSlipperImage.showIcon(slipper.icon)
     holder.duckSlipperSize.text = "Размер: ${slipper.size}"
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(slipper) }
@@ -68,20 +112,22 @@ class DucksClassicAdapter(
   }
 
   private fun bindDuckViewHolder(holder: DuckViewHolder, position: Int) {
-    val duck = data[position] as RubberDuck
+    val duck = groupedData[position] as RubberDuck
     holder.rubberDuckImage.showIcon(duck.icon)
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(duck) }
   }
 
   override fun getItemViewType(position: Int): Int {
-    return when (data[position]) {
+    return when (groupedData[position]) {
+      is FakeDuck -> VIEW_TYPE_HEADER
       is RubberDuck -> VIEW_TYPE_RUBBER_DUCK
       is DuckSlipper -> VIEW_TYPE_SLIPPER_DUCK
       else -> throw UnsupportedOperationException("unknown type for $position position")
     }
   }
 
-  override fun getItemCount() = data.count()
+  override fun getItemCount() = groupedData.count()
+//  override fun getItemCount() = groupedData.keys.count() + groupedData.values.count()
 
   class DuckViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val rubberDuckImage: ImageView = view.findViewById(R.id.rubberDuckImage)
@@ -95,7 +141,9 @@ class DucksClassicAdapter(
   }
 
   class Header(view: View) : RecyclerView.ViewHolder(view) {
-    val title: ImageView = view.findViewById(R.id.headerTitle)
-    val arrow: TextView = view.findViewById(R.id.headerArrow)
+    val title: TextView = view.findViewById(R.id.headerTitle)
+    val arrow: ImageView = view.findViewById(R.id.headerArrow)
   }
 }
+
+private class FakeDuck(var titleRes: Int) : Duck
