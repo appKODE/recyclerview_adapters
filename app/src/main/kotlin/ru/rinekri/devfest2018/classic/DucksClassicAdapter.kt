@@ -135,7 +135,7 @@ class DucksClassicAdapter(
     }
   }
 
-  fun getItem(position: Int) = internalData[position - ADVERTS_COUNT]
+  private fun getItem(position: Int) = internalData[position - ADVERTS_COUNT]
 
   override fun getItemCount() = internalData.count() + ADVERTS_COUNT
 
