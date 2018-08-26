@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout.HORIZONTAL
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import ru.rinekri.devfest2018.DuckMockData
@@ -23,7 +25,8 @@ private const val VIEW_TYPE_ADVERT: Int = 4
 private const val ADVERTS_COUNT = 1
 
 class DucksClassicAdapter(
-  private val onDuckClickAction: (Duck) -> Unit,
+  private val onDuckClickAction: (Pair<Duck, Int>) -> Unit,
+  private val onSlipperClickAction: (Duck) -> Unit,
   private val onAdvertClickAction: (Advert) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -40,11 +43,19 @@ class DucksClassicAdapter(
           groupedDucks.value.let { listOf(FakeDuck(titleRes, it)).plus(it) }
         }
         .toMutableList()
+      duckCountsAdapters = internalData.map { duck ->
+        val rubberDuck = (duck as? RubberDuck)
+        DucksCountAdapter(
+          data = (1..(rubberDuck?.count ?: 1)).map { count -> duck to count },
+          onCountClickAction = { onDuckClickAction.invoke(it) }
+        )
+      }
     }
 
   private val advert = DuckMockData.adverts.orEmpty().shuffled().first()
 
   private var internalData: MutableList<Duck> = mutableListOf()
+  private var duckCountsAdapters: List<DucksCountAdapter> = emptyList()
   private var collapsedHeaders: MutableSet<Duck> = hashSetOf()
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -119,13 +130,15 @@ class DucksClassicAdapter(
     val slipper = getItem(position) as DuckSlipper
     holder.duckSlipperImage.showIcon(slipper.icon)
     holder.duckSlipperSize.text = "Размер: ${slipper.size}"
-    holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(slipper) }
+    holder.clicksHolder.setOnClickListener { onSlipperClickAction.invoke(slipper) }
   }
 
   private fun bindDuckViewHolder(holder: DuckViewHolder, position: Int) {
     val duck = getItem(position) as RubberDuck
     holder.rubberDuckImage.showIcon(duck.icon)
-    holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(duck) }
+    holder.rubberDuckCounts.adapter = duckCountsAdapters[position - ADVERTS_COUNT]
+    val context = holder.itemView.context
+    holder.rubberDuckCounts.layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
   }
 
   override fun getItemViewType(position: Int): Int {
@@ -144,7 +157,7 @@ class DucksClassicAdapter(
 
   class DuckViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val rubberDuckImage: ImageView = view.findViewById(R.id.rubberDuckImage)
-    val clicksHolder: View = view.findViewById(R.id.clicksHolder)
+    val rubberDuckCounts: RecyclerView = view.findViewById(R.id.rubberDuckCounts)
   }
 
   class SlipperViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -179,4 +192,29 @@ private fun ImageView.showIcon(icon: String, placeHolderRes: Int = R.drawable.du
     .noFade()
     .placeholder(placeHolderRes)
     .into(this)
+}
+
+
+private class DucksCountAdapter(
+  private val data: List<Pair<Duck, Int>>,
+  private val onCountClickAction: (Pair<Duck, Int>) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    val view = parent.context.inflate(R.layout.item_duck_count, parent)
+    return CountViewHolder(view)
+  }
+
+  override fun getItemCount() = data.count()
+
+  override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    (holder as CountViewHolder).count.apply {
+      val item = data[position]
+      text = item.second.toString()
+      setOnClickListener { onCountClickAction.invoke(item) }
+    }
+  }
+
+  class CountViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val count: TextView = view.findViewById(R.id.count)
+  }
 }

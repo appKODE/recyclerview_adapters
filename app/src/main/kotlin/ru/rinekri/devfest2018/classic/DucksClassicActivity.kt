@@ -21,8 +21,8 @@ class DucksClassicActivity : AppCompatActivity() {
           AlertDialog
             .Builder(this@DucksClassicActivity)
             .setTitle("Спасибо!")
-            .setMessage("Ваша заявка принята и ожидает обработки.")
-            .setPositiveButton("Хорошо", null)
+            .setMessage("Ваша заявка на уточку в количестве ${it.second} штук принята и ожидает обработки.")
+            .setPositiveButton("Прекрасно", null)
             .show()
         },
         onAdvertClickAction = {
@@ -32,7 +32,16 @@ class DucksClassicActivity : AppCompatActivity() {
             .setMessage("Ваш заказ на соль успешно оформлен, мы с вами свяжемся.")
             .setPositiveButton("ОК", null)
             .show()
+        },
+        onSlipperClickAction = {
+          AlertDialog
+            .Builder(this@DucksClassicActivity)
+            .setTitle("Спасибо!")
+            .setMessage("Ваша заявка на шлепки с уточками принята и ожидает обработки.")
+            .setPositiveButton("Хорошо", null)
+            .show()
         }
+
       ).apply {
         data = getDucks()
       }

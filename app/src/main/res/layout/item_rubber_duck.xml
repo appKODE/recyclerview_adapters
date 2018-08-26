@@ -10,6 +10,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
+        android:paddingBottom="6dp"
         android:layout_height="wrap_content">
 
         <ImageView
@@ -21,18 +22,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:src="@drawable/duck_stub" />
 
-        <View
-            android:id="@+id/clicksHolder"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -42,6 +31,41 @@
             app:layout_constraintBottom_toBottomOf="@+id/rubberDuckImage"
             app:layout_constraintStart_toEndOf="@+id/rubberDuckImage"
             app:layout_constraintTop_toTopOf="@+id/rubberDuckImage" />
+
+        <TextView
+            android:id="@+id/rubberDuckCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:layout_marginStart="16dp"
+            android:text="Select count:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rubberDuckImage" />
+
+        <View
+            android:id="@+id/rubberDuckDivider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="@color/gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rubberDuckCount" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rubberDuckCounts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:clipToPadding="false"
+            android:paddingStart="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rubberDuckDivider" />
 
     </android.support.constraint.ConstraintLayout>
 
