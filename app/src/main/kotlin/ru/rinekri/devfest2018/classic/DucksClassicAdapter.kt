@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.inflate
 import ru.rinekri.devfest2018.models.Duck
@@ -17,6 +18,8 @@ import ru.rinekri.devfest2018.models.RubberDuck
 private const val VIEW_TYPE_RUBBER_DUCK: Int = 1
 private const val VIEW_TYPE_SLIPPER_DUCK: Int = 2
 private const val VIEW_TYPE_HEADER: Int = 3
+private const val VIEW_TYPE_ADVERT: Int = 4
+private const val ADVERTS_COUNT = 1
 
 class DucksClassicAdapter(
   private val onDuckClickAction: (Duck) -> Unit
@@ -37,6 +40,8 @@ class DucksClassicAdapter(
         .toMutableList()
     }
 
+  private val advert = DuckMockData.adverts.orEmpty().shuffled().first()
+
   private var internalData: MutableList<Duck> = mutableListOf()
   private var collapsedHeaders: MutableSet<Duck> = hashSetOf()
 
@@ -52,7 +57,11 @@ class DucksClassicAdapter(
       }
       VIEW_TYPE_HEADER -> {
         val view = parent.context.inflate(R.layout.item_header, parent)
-        Header(view)
+        HeaderViewHolder(view)
+      }
+      VIEW_TYPE_ADVERT -> {
+        val view = parent.context.inflate(R.layout.item_advert, parent)
+        AdvertViewHolder(view)
       }
       else -> throw UnsupportedOperationException("view type $viewType without ViewHolder")
     }
@@ -60,14 +69,20 @@ class DucksClassicAdapter(
 
   override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     when (holder) {
-      is Header -> bindHeaderViewHolder(holder, position)
+      is HeaderViewHolder -> bindHeaderViewHolder(holder, position)
       is DuckViewHolder -> bindDuckViewHolder(holder, position)
       is SlipperViewHolder -> bindSlipperViewHolder(holder, position)
+      is AdvertViewHolder -> bindAdvertViewHolder(holder)
     }
   }
 
-  private fun bindHeaderViewHolder(holder: Header, position: Int) {
-    val item = internalData[position] as FakeDuck
+  private fun bindAdvertViewHolder(holder: AdvertViewHolder) {
+    holder.advertImage.showIcon(advert.icon)
+    holder.advertTagline.text = advert.tagline
+  }
+
+  private fun bindHeaderViewHolder(holder: HeaderViewHolder, position: Int) {
+    val item = getItem(position) as FakeDuck
     holder.clicksHolder.setOnClickListener { changeCollapseState(item, position) }
     val arrowRes = if (collapsedHeaders.contains(item))
       R.drawable.ic_keyboard_arrow_up_black_24dp
@@ -84,9 +99,10 @@ class DucksClassicAdapter(
     } else {
       collapsedHeaders.add(item)
     }
+    // 1 to add items after header
     val startPosition = position + 1
     if (isCollapsed) {
-      internalData.addAll(startPosition, item.items)
+      internalData.addAll(startPosition - ADVERTS_COUNT, item.items)
       notifyItemRangeInserted(startPosition, item.items.count())
     } else {
       internalData.removeAll(item.items)
@@ -97,31 +113,21 @@ class DucksClassicAdapter(
 
   @SuppressLint("SetTextI18n")
   private fun bindSlipperViewHolder(holder: SlipperViewHolder, position: Int) {
-    val slipper = internalData[position] as DuckSlipper
+    val slipper = getItem(position) as DuckSlipper
     holder.duckSlipperImage.showIcon(slipper.icon)
     holder.duckSlipperSize.text = "Размер: ${slipper.size}"
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(slipper) }
   }
 
-  private fun ImageView.showIcon(icon: String) {
-    Picasso.get()
-      .load(icon)
-      .config(Bitmap.Config.ARGB_4444)
-      .fit()
-      .centerCrop()
-      .noFade()
-      .placeholder(R.drawable.duck_stub)
-      .into(this)
-  }
-
   private fun bindDuckViewHolder(holder: DuckViewHolder, position: Int) {
-    val duck = internalData[position] as RubberDuck
+    val duck = getItem(position) as RubberDuck
     holder.rubberDuckImage.showIcon(duck.icon)
     holder.clicksHolder.setOnClickListener { onDuckClickAction.invoke(duck) }
   }
 
   override fun getItemViewType(position: Int): Int {
-    return when (internalData[position]) {
+    if (position == 0) return VIEW_TYPE_ADVERT
+    return when (getItem(position)) {
       is FakeDuck -> VIEW_TYPE_HEADER
       is RubberDuck -> VIEW_TYPE_RUBBER_DUCK
       is DuckSlipper -> VIEW_TYPE_SLIPPER_DUCK
@@ -129,7 +135,9 @@ class DucksClassicAdapter(
     }
   }
 
-  override fun getItemCount() = internalData.count()
+  fun getItem(position: Int) = internalData[position - ADVERTS_COUNT]
+
+  override fun getItemCount() = internalData.count() + ADVERTS_COUNT
 
   class DuckViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val rubberDuckImage: ImageView = view.findViewById(R.id.rubberDuckImage)
@@ -142,11 +150,30 @@ class DucksClassicAdapter(
     val clicksHolder: View = view.findViewById(R.id.clicksHolder)
   }
 
-  class Header(view: View) : RecyclerView.ViewHolder(view) {
+  class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val title: TextView = view.findViewById(R.id.headerTitle)
     val arrow: ImageView = view.findViewById(R.id.headerArrow)
     val clicksHolder: View = view.findViewById(R.id.clicksHolder)
   }
+
+  class AdvertViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val advertTagline: TextView = view.findViewById(R.id.advertTagline)
+    val advertImage: ImageView = view.findViewById(R.id.advertImage)
+  }
 }
 
-private class FakeDuck(val titleRes: Int, val items: List<Duck>) : Duck
+private class FakeDuck(
+  val titleRes: Int,
+  val items: List<Duck>
+) : Duck
+
+private fun ImageView.showIcon(icon: String, placeHolderRes: Int = R.drawable.duck_stub) {
+  Picasso.get()
+    .load(icon)
+    .config(Bitmap.Config.ARGB_4444)
+    .fit()
+    .centerCrop()
+    .noFade()
+    .placeholder(placeHolderRes)
+    .into(this)
+}
