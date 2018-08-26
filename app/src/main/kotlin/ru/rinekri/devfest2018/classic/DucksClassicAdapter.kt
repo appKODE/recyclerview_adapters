@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.inflate
+import ru.rinekri.devfest2018.models.Advert
 import ru.rinekri.devfest2018.models.Duck
 import ru.rinekri.devfest2018.models.DuckSlipper
 import ru.rinekri.devfest2018.models.RubberDuck
@@ -22,7 +23,8 @@ private const val VIEW_TYPE_ADVERT: Int = 4
 private const val ADVERTS_COUNT = 1
 
 class DucksClassicAdapter(
-  private val onDuckClickAction: (Duck) -> Unit
+  private val onDuckClickAction: (Duck) -> Unit,
+  private val onAdvertClickAction: (Advert) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
   var data: List<Duck> = emptyList()
@@ -79,6 +81,7 @@ class DucksClassicAdapter(
   private fun bindAdvertViewHolder(holder: AdvertViewHolder) {
     holder.advertImage.showIcon(advert.icon)
     holder.advertTagline.text = advert.tagline
+    holder.itemView.setOnClickListener { onAdvertClickAction.invoke(advert) }
   }
 
   private fun bindHeaderViewHolder(holder: HeaderViewHolder, position: Int) {

@@ -24,6 +24,14 @@ class DucksClassicActivity : AppCompatActivity() {
             .setMessage("Ваша заявка принята и ожидает обработки.")
             .setPositiveButton("Хорошо", null)
             .show()
+        },
+        onAdvertClickAction = {
+          AlertDialog
+            .Builder(this@DucksClassicActivity)
+            .setTitle("Готово!")
+            .setMessage("Ваш заказ на соль успешно оформлен, мы с вами свяжемся.")
+            .setPositiveButton("ОК", null)
+            .show()
         }
       ).apply {
         data = getDucks()
