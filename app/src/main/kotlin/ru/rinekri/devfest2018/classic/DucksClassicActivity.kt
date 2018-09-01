@@ -1,10 +1,10 @@
 package ru.rinekri.devfest2018.classic
 
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.models.Duck
