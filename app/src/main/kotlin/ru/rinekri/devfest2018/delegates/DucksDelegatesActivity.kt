@@ -7,10 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
-import ru.rinekri.devfest2018.items.AdvertItem
-import ru.rinekri.devfest2018.items.DuckCountItem
-import ru.rinekri.devfest2018.items.DuckSlipperItem
-import ru.rinekri.devfest2018.items.RubberDuckItem
+import ru.rinekri.devfest2018.items.*
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 
 class DucksDelegatesActivity : AppCompatActivity() {
@@ -44,18 +41,25 @@ class DucksDelegatesActivity : AppCompatActivity() {
             .setMessage("Ваша заявка на шлепки с уточками принята и ожидает обработки.")
             .setPositiveButton("Хорошо", null)
             .show()
+        },
+        onHeaderClickAction = {
+          // TODO: Логика скрытия / раскрытия групп
         }
-
       ).apply {
-        val data = getAdvert().plus(getRubberDucks()).plus(getDuckSlippers())
+        val data = mutableListOf<DisplayableItem>().apply {
+          add(getAdvert())
+          add(HeaderItem(false, R.string.rubber_ducks))
+          addAll(getRubberDucks())
+          add(HeaderItem(false, R.string.slippers))
+          addAll(getDuckSlippers())
+        }
         setData(data)
       }
     }
   }
 
-  private fun getAdvert(): List<DisplayableItem> {
-    val firstAdvert = DuckMockData.adverts.orEmpty().map { AdvertItem(it.icon, it.tagline) }.shuffled().first()
-    return listOf(firstAdvert)
+  private fun getAdvert(): DisplayableItem {
+    return DuckMockData.adverts.orEmpty().map { AdvertItem(it.icon, it.tagline) }.shuffled().first()
   }
 
   private fun getRubberDucks(): List<DisplayableItem> {

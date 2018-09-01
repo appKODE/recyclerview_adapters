@@ -12,23 +12,22 @@ import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.inflate
-import ru.rinekri.devfest2018.items.AdvertItem
-import ru.rinekri.devfest2018.items.DuckCountItem
-import ru.rinekri.devfest2018.items.DuckSlipperItem
-import ru.rinekri.devfest2018.items.RubberDuckItem
+import ru.rinekri.devfest2018.items.*
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 import ru.rinekri.devfest2018.showIcon
 
 class DucksDelegatesAdapter(
   onDuckCountClickAction: (DuckCountItem) -> Unit,
   onSlipperClickAction: (DuckSlipperItem) -> Unit,
-  onAdvertClickAction: (AdvertItem) -> Unit
+  onAdvertClickAction: (AdvertItem) -> Unit,
+  onHeaderClickAction: () -> Unit
 ) : ListDelegationAdapter<List<DisplayableItem>>() {
 
   init {
     delegatesManager.addDelegate(RubberDuckDelegate(onDuckCountClickAction))
     delegatesManager.addDelegate(DuckSlipperDelegate(onSlipperClickAction))
     delegatesManager.addDelegate(AdvertDelegate(onAdvertClickAction))
+    delegatesManager.addDelegate(HeaderDelegate(onHeaderClickAction))
   }
 
   fun setData(items: List<DisplayableItem>) {
@@ -147,5 +146,37 @@ private class DuckCountDelegate(
 
   class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val count: TextView = itemView.findViewById(R.id.count)
+  }
+}
+
+private class HeaderDelegate(
+  private val onHeaderClickAction: () -> Unit
+) : AbsListItemAdapterDelegate<HeaderItem, DisplayableItem, HeaderDelegate.ViewHolder>() {
+
+  override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
+    return item is HeaderItem
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+    val item = parent.context.inflate(R.layout.item_header, parent, false)
+    return ViewHolder(item)
+  }
+
+  override fun onBindViewHolder(item: HeaderItem, viewHolder: ViewHolder, payloads: List<Any>) {
+    viewHolder.apply {
+      clicksHolder.setOnClickListener { onHeaderClickAction.invoke() }
+      val arrowRes = if (item.isCollapsed)
+        R.drawable.ic_keyboard_arrow_up_black_24dp
+      else
+        R.drawable.ic_keyboard_arrow_down_black_24dp
+      arrow.setImageResource(arrowRes)
+      title.setText(item.titleRes)
+    }
+  }
+
+  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val title: TextView = itemView.findViewById(R.id.headerTitle)
+    val arrow: ImageView = itemView.findViewById(R.id.headerArrow)
+    val clicksHolder: View = itemView.findViewById(R.id.clicksHolder)
   }
 }
