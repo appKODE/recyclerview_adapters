@@ -1,3 +1,0 @@
-package ru.rinekri.devfest2018.delegates
-
-class DucksDelegatesAdapter
