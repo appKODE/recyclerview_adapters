@@ -20,7 +20,7 @@ class DucksDelegatesAdapter(
   onDuckCountClickAction: (DuckCountItem) -> Unit,
   onSlipperClickAction: (DuckSlipperItem) -> Unit,
   onAdvertClickAction: (AdvertItem) -> Unit,
-  onHeaderClickAction: () -> Unit
+  onHeaderClickAction: (HeaderItem) -> Unit
 ) : ListDelegationAdapter<List<DisplayableItem>>() {
 
   init {
@@ -150,7 +150,7 @@ private class DuckCountDelegate(
 }
 
 private class HeaderDelegate(
-  private val onHeaderClickAction: () -> Unit
+  private val onHeaderClickAction: (HeaderItem) -> Unit
 ) : AbsListItemAdapterDelegate<HeaderItem, DisplayableItem, HeaderDelegate.ViewHolder>() {
 
   override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
@@ -164,7 +164,7 @@ private class HeaderDelegate(
 
   override fun onBindViewHolder(item: HeaderItem, viewHolder: ViewHolder, payloads: List<Any>) {
     viewHolder.apply {
-      clicksHolder.setOnClickListener { onHeaderClickAction.invoke() }
+      clicksHolder.setOnClickListener { onHeaderClickAction.invoke(item) }
       val arrowRes = if (item.isCollapsed)
         R.drawable.ic_keyboard_arrow_up_black_24dp
       else

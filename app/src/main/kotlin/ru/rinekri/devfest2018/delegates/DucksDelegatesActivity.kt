@@ -13,6 +13,7 @@ import ru.rinekri.devfest2018.items.common.DisplayableItem
 class DucksDelegatesActivity : AppCompatActivity() {
 
   private val advert = DuckMockData.adverts.orEmpty().map { AdvertItem(it.icon, it.tagline) }.shuffled().first()
+  private val collapsedItems: MutableSet<Int> = hashSetOf()
 
   private lateinit var ducksList: RecyclerView
 
@@ -28,7 +29,7 @@ class DucksDelegatesActivity : AppCompatActivity() {
   }
 
   fun createAdapter(): DucksDelegatesAdapter {
-    val ducksDelegatesAdapter = DucksDelegatesAdapter(
+    return DucksDelegatesAdapter(
       onDuckCountClickAction = {
         AlertDialog
           .Builder(this@DucksDelegatesActivity)
@@ -54,20 +55,27 @@ class DucksDelegatesActivity : AppCompatActivity() {
           .show()
       },
       onHeaderClickAction = {
-//        TODO: Добавить логику скрытия/раскрытия элементов
+        if (collapsedItems.contains(it.titleRes)) {
+          collapsedItems.remove(it.titleRes)
+        } else {
+          collapsedItems.add(it.titleRes)
+        }
         (ducksList.adapter as DucksDelegatesAdapter).apply { showData() }
       }
     )
-    return ducksDelegatesAdapter
   }
 
   private fun DucksDelegatesAdapter.showData() {
     val data = mutableListOf<DisplayableItem>().apply {
       add(advert)
       add(HeaderItem(false, R.string.rubber_ducks))
-      addAll(getRubberDucks())
+      if (!collapsedItems.contains(R.string.rubber_ducks)) {
+        addAll(getRubberDucks())
+      }
       add(HeaderItem(false, R.string.slippers))
-      addAll(getDuckSlippers())
+      if (collapsedItems.contains(R.string.slippers)) {
+        addAll(getDuckSlippers())
+      }
     }
     setData(data)
   }
