@@ -4,18 +4,23 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.inflate
+import ru.rinekri.devfest2018.items.DuckSlipperItem
 import ru.rinekri.devfest2018.items.RubberDuckItem
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 import ru.rinekri.devfest2018.showIcon
 
-class DucksDelegatesAdapter : ListDelegationAdapter<List<DisplayableItem>>() {
+class DucksDelegatesAdapter(
+  onSlipperClickAction: (DuckSlipperItem) -> Unit
+) : ListDelegationAdapter<List<DisplayableItem>>() {
 
   init {
     delegatesManager.addDelegate(RubberDuckDelegate())
+    delegatesManager.addDelegate(DuckSlipperDelegate(onSlipperClickAction))
   }
 
   fun setData(items: List<DisplayableItem>) {
@@ -24,7 +29,7 @@ class DucksDelegatesAdapter : ListDelegationAdapter<List<DisplayableItem>>() {
   }
 }
 
-private class RubberDuckDelegate : AbsListItemAdapterDelegate<RubberDuckItem, DisplayableItem, RubberDuckDelegate.ViewHolder>() {
+private class RubberDuckDelegate() : AbsListItemAdapterDelegate<RubberDuckItem, DisplayableItem, RubberDuckDelegate.ViewHolder>() {
 
   override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
     return item is RubberDuckItem
@@ -43,5 +48,33 @@ private class RubberDuckDelegate : AbsListItemAdapterDelegate<RubberDuckItem, Di
 
   class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val rubberDuckImage: ImageView = itemView.findViewById(R.id.rubberDuckImage)
+  }
+}
+
+private class DuckSlipperDelegate(
+  private val onSlipperClickAction: (DuckSlipperItem) -> Unit
+) : AbsListItemAdapterDelegate<DuckSlipperItem, DisplayableItem, DuckSlipperDelegate.ViewHolder>() {
+
+  override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
+    return item is DuckSlipperItem
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+    val item = parent.context.inflate(R.layout.item_duck_slipper, parent, false)
+    return ViewHolder(item)
+  }
+
+  override fun onBindViewHolder(item: DuckSlipperItem, viewHolder: ViewHolder, payloads: List<Any>) {
+    viewHolder.apply {
+      duckSlipperImage.showIcon(item.icon)
+      duckSlipperSize.text = "Размер: ${item.size}"
+      clicksHolder.setOnClickListener { onSlipperClickAction.invoke(item) }
+    }
+  }
+
+  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val duckSlipperImage: ImageView = itemView.findViewById(R.id.duckSlipperImage)
+    val duckSlipperSize: TextView = itemView.findViewById(R.id.duckSlipperSize)
+    val clicksHolder: View = itemView.findViewById(R.id.clicksHolder)
   }
 }

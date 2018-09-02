@@ -2,6 +2,7 @@ package ru.rinekri.devfest2018
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import ru.rinekri.devfest2018.models.DuckSlipper
 import ru.rinekri.devfest2018.models.RubberDuck
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -193,12 +194,53 @@ object DuckMockData {
     "count": 5
   }
 ] """
+  private const val duckSlippersJson = """ [
+  {
+    "size": "XS",
+    "icon": "file:///android_asset/slippers/712RzcG5xuL._UX569_.jpg"
+  },
+  {
+    "size": "S",
+    "icon": "file:///android_asset/slippers/716LAvMAEBL._UY500_.jpg"
+  },
+  {
+    "size": "L",
+    "icon": "file:///android_asset/slippers/forever-21-YELLOW-Duck-Indoor-Slippers.jpeg"
+  },
+  {
+    "size": "XS",
+    "icon": "file:///android_asset/slippers/home-shoes-yellow-duck-slippers-for-adult-no-heel-97139.jpg"
+  },
+  {
+    "size": "XXL",
+    "icon": "file:///android_asset/slippers/il_fullxfull.702533548_w9ai.jpg"
+  },
+  {
+    "size": "XL",
+    "icon": "file:///android_asset/slippers/slippers1.jpeg"
+  },
+  {
+    "size": "XL",
+    "icon": "file:///android_asset/slippers/slippers2.jpeg"
+  },
+  {
+    "size": "L",
+    "icon": "file:///android_asset/slippers/thumbnail_duck_slippers.jpg"
+  }
+]
+"""
   private val parser = Moshi.Builder().build()
 
   val ducks: List<RubberDuck>? by lazy {
     parser
       .adapter<List<RubberDuck>>(List::class.java.withTypes(RubberDuck::class.java))
       .fromJson(rubberDucksJson)
+  }
+
+  val slippers: List<DuckSlipper>? by lazy {
+    parser
+      .adapter<List<DuckSlipper>>(List::class.java.withTypes(DuckSlipper::class.java))
+      .fromJson(duckSlippersJson)
   }
 
   private fun Type.withTypes(vararg types: Type): ParameterizedType = Types.newParameterizedType(this, *types)

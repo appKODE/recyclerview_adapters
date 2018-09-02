@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/duckSlipperImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="6dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@drawable/duck_stub" />
+
+        <View
+            android:id="@+id/clicksHolder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/duckSlipperTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Duck Slipper"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/duckSlipperSize"
+            app:layout_constraintStart_toEndOf="@+id/duckSlipperImage"
+            app:layout_constraintTop_toTopOf="@+id/duckSlipperImage" />
+
+        <TextView
+            android:id="@+id/duckSlipperSize"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Размер: XS"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/duckSlipperImage"
+            app:layout_constraintStart_toEndOf="@+id/duckSlipperImage"
+            app:layout_constraintTop_toBottomOf="@+id/duckSlipperTitle" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
