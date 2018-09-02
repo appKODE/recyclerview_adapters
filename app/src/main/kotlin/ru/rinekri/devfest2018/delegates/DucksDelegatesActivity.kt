@@ -7,10 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
-import ru.rinekri.devfest2018.items.AdvertItem
-import ru.rinekri.devfest2018.items.DuckSlipperItem
-import ru.rinekri.devfest2018.items.HeaderItem
-import ru.rinekri.devfest2018.items.RubberDuckItem
+import ru.rinekri.devfest2018.items.*
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 
 class DucksDelegatesActivity : AppCompatActivity() {
@@ -31,8 +28,16 @@ class DucksDelegatesActivity : AppCompatActivity() {
     }
   }
 
-  fun createAdapter(): DucksDelegatesAdapter {
+  private fun createAdapter(): DucksDelegatesAdapter {
     return DucksDelegatesAdapter(
+      onDuckCountClickAction = {
+        AlertDialog
+          .Builder(this@DucksDelegatesActivity)
+          .setTitle("Спасибо!")
+          .setMessage("Ваша заявка на уточку в количестве ${it.count} штук принята и ожидает обработки.")
+          .setPositiveButton("Прекрасно", null)
+          .show()
+      },
       onSlipperClickAction = {
         AlertDialog
           .Builder(this@DucksDelegatesActivity)
@@ -75,7 +80,8 @@ class DucksDelegatesActivity : AppCompatActivity() {
 
   private fun getRubberDucks(): List<DisplayableItem> {
     return DuckMockData.ducks.orEmpty().map {
-      RubberDuckItem(it.icon)
+      val counts = (1..it.count).map { count -> DuckCountItem(it, count) }
+      RubberDuckItem(it.icon, counts)
     }
   }
 

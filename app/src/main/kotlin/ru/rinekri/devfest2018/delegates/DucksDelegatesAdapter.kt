@@ -1,31 +1,32 @@
 package ru.rinekri.devfest2018.delegates
 
 import android.support.v7.util.DiffUtil
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.common.DisplayableItemsDiffUtilCallback
 import ru.rinekri.devfest2018.inflate
-import ru.rinekri.devfest2018.items.DuckSlipperItem
-import ru.rinekri.devfest2018.items.HeaderItem
-import ru.rinekri.devfest2018.items.RubberDuckItem
-import ru.rinekri.devfest2018.items.AdvertItem
+import ru.rinekri.devfest2018.items.*
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 import ru.rinekri.devfest2018.showIcon
 
 class DucksDelegatesAdapter(
   onAdvertClickAction: (AdvertItem) -> Unit,
   onSlipperClickAction: (DuckSlipperItem) -> Unit,
-  onHeaderClickAction: (HeaderItem) -> Unit
+  onHeaderClickAction: (HeaderItem) -> Unit,
+  onDuckCountClickAction: (DuckCountItem) -> Unit
 ) : ListDelegationAdapter<List<DisplayableItem>>() {
 
   init {
-    delegatesManager.addDelegate(RubberDuckDelegate())
+    delegatesManager.addDelegate(RubberDuckDelegate(onDuckCountClickAction))
     delegatesManager.addDelegate(DuckSlipperDelegate(onSlipperClickAction))
     delegatesManager.addDelegate(HeaderDelegate(onHeaderClickAction))
     delegatesManager.addDelegate(AdvertDelegate(onAdvertClickAction))
@@ -39,6 +40,7 @@ class DucksDelegatesAdapter(
 }
 
 private class RubberDuckDelegate(
+  private val onDuckCountClickAction: (DuckCountItem) -> Unit
 ) : AbsListItemAdapterDelegate<RubberDuckItem, DisplayableItem, RubberDuckDelegate.ViewHolder>() {
 
   override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
@@ -52,12 +54,46 @@ private class RubberDuckDelegate(
 
   override fun onBindViewHolder(item: RubberDuckItem, viewHolder: ViewHolder, payloads: List<Any>) {
     viewHolder.apply {
+      val context = itemView.context
       rubberDuckImage.showIcon(item.icon)
+      val manager = AdapterDelegatesManager<List<DisplayableItem>>()
+        .addDelegate(DuckCountDelegate(onDuckCountClickAction))
+      rubberDuckCounts.adapter = ListDelegationAdapter<List<DisplayableItem>>(manager).apply {
+        items = item.counts
+        notifyDataSetChanged()
+      }
+      rubberDuckCounts.layoutManager = LinearLayoutManager(context, LinearLayout.HORIZONTAL, false)
     }
   }
 
   class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val rubberDuckImage: ImageView = itemView.findViewById(R.id.rubberDuckImage)
+    val rubberDuckCounts: RecyclerView = itemView.findViewById(R.id.rubberDuckCounts)
+  }
+}
+
+private class DuckCountDelegate(
+  private val onDuckCountClickAction: (DuckCountItem) -> Unit
+) : AbsListItemAdapterDelegate<DuckCountItem, DisplayableItem, DuckCountDelegate.ViewHolder>() {
+
+  override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
+    return item is DuckCountItem
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+    val item = parent.context.inflate(R.layout.item_duck_count, parent, false)
+    return ViewHolder(item)
+  }
+
+  override fun onBindViewHolder(item: DuckCountItem, viewHolder: ViewHolder, payloads: List<Any>) {
+    viewHolder.count.apply {
+      text = item.count.toString()
+      setOnClickListener { onDuckCountClickAction.invoke(item) }
+    }
+  }
+
+  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val count: TextView = itemView.findViewById(R.id.count)
   }
 }
 
