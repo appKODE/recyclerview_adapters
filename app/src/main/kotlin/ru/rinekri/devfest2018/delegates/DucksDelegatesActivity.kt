@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
+import ru.rinekri.devfest2018.items.AdvertItem
 import ru.rinekri.devfest2018.items.DuckSlipperItem
 import ru.rinekri.devfest2018.items.HeaderItem
 import ru.rinekri.devfest2018.items.RubberDuckItem
@@ -14,6 +15,7 @@ import ru.rinekri.devfest2018.items.common.DisplayableItem
 
 class DucksDelegatesActivity : AppCompatActivity() {
 
+  private val advert = DuckMockData.adverts.orEmpty().map { AdvertItem(it.icon, it.tagline) }.shuffled().first()
   private val collapsedItems: MutableSet<Int> = hashSetOf()
 
   private lateinit var ducksList: RecyclerView
@@ -46,12 +48,21 @@ class DucksDelegatesActivity : AppCompatActivity() {
           collapsedItems.add(it.titleRes)
         }
         (ducksList.adapter as DucksDelegatesAdapter).apply { showData() }
+      },
+      onAdvertClickAction = {
+        AlertDialog
+          .Builder(this@DucksDelegatesActivity)
+          .setTitle("Готово!")
+          .setMessage("Ваш заказ на соль успешно оформлен, мы с вами свяжемся.")
+          .setPositiveButton("ОК", null)
+          .show()
       }
     )
   }
 
   private fun DucksDelegatesAdapter.showData() {
     val data = mutableListOf<DisplayableItem>().apply {
+      add(advert)
       val isRubberDucksCollapsed = collapsedItems.contains(R.string.rubber_ducks)
       add(HeaderItem(isRubberDucksCollapsed, R.string.rubber_ducks))
       if (!isRubberDucksCollapsed) addAll(getRubberDucks())

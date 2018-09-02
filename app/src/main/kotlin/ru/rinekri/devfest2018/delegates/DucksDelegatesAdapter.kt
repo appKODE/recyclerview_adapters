@@ -14,10 +14,12 @@ import ru.rinekri.devfest2018.inflate
 import ru.rinekri.devfest2018.items.DuckSlipperItem
 import ru.rinekri.devfest2018.items.HeaderItem
 import ru.rinekri.devfest2018.items.RubberDuckItem
+import ru.rinekri.devfest2018.items.AdvertItem
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 import ru.rinekri.devfest2018.showIcon
 
 class DucksDelegatesAdapter(
+  onAdvertClickAction: (AdvertItem) -> Unit,
   onSlipperClickAction: (DuckSlipperItem) -> Unit,
   onHeaderClickAction: (HeaderItem) -> Unit
 ) : ListDelegationAdapter<List<DisplayableItem>>() {
@@ -26,6 +28,7 @@ class DucksDelegatesAdapter(
     delegatesManager.addDelegate(RubberDuckDelegate())
     delegatesManager.addDelegate(DuckSlipperDelegate(onSlipperClickAction))
     delegatesManager.addDelegate(HeaderDelegate(onHeaderClickAction))
+    delegatesManager.addDelegate(AdvertDelegate(onAdvertClickAction))
   }
 
   fun setData(items: List<DisplayableItem>) {
@@ -115,5 +118,32 @@ private class HeaderDelegate(
     val title: TextView = itemView.findViewById(R.id.headerTitle)
     val arrow: ImageView = itemView.findViewById(R.id.headerArrow)
     val clicksHolder: View = itemView.findViewById(R.id.clicksHolder)
+  }
+}
+
+private class AdvertDelegate(
+  private val onAdvertClickAction: (AdvertItem) -> Unit
+) : AbsListItemAdapterDelegate<AdvertItem, DisplayableItem, AdvertDelegate.ViewHolder>() {
+
+  override fun isForViewType(item: DisplayableItem, items: List<DisplayableItem>, position: Int): Boolean {
+    return item is AdvertItem
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+    val item = parent.context.inflate(R.layout.item_advert, parent, false)
+    return ViewHolder(item)
+  }
+
+  override fun onBindViewHolder(item: AdvertItem, viewHolder: ViewHolder, payloads: List<Any>) {
+    viewHolder.apply {
+      advertImage.showIcon(item.icon)
+      advertTagline.text = item.tagline
+      itemView.setOnClickListener { onAdvertClickAction.invoke(item) }
+    }
+  }
+
+  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val advertTagline: TextView = itemView.findViewById(R.id.advertTagline)
+    val advertImage: ImageView = itemView.findViewById(R.id.advertImage)
   }
 }
