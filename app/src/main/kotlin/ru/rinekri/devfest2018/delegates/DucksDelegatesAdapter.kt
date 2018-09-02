@@ -1,5 +1,6 @@
 package ru.rinekri.devfest2018.delegates
 
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -11,6 +12,7 @@ import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import ru.rinekri.devfest2018.R
+import ru.rinekri.devfest2018.common.DisplayableItemsDiffUtilCallback
 import ru.rinekri.devfest2018.inflate
 import ru.rinekri.devfest2018.items.*
 import ru.rinekri.devfest2018.items.common.DisplayableItem
@@ -31,8 +33,9 @@ class DucksDelegatesAdapter(
   }
 
   fun setData(items: List<DisplayableItem>) {
+    val diffResult = DiffUtil.calculateDiff(DisplayableItemsDiffUtilCallback(this.items.orEmpty(), items))
     this.items = items
-    notifyDataSetChanged()
+    diffResult.dispatchUpdatesTo(this)
   }
 }
 
