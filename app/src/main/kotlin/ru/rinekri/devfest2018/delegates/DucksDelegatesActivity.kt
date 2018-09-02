@@ -8,10 +8,14 @@ import android.support.v7.widget.RecyclerView
 import ru.rinekri.devfest2018.DuckMockData
 import ru.rinekri.devfest2018.R
 import ru.rinekri.devfest2018.items.DuckSlipperItem
+import ru.rinekri.devfest2018.items.HeaderItem
 import ru.rinekri.devfest2018.items.RubberDuckItem
 import ru.rinekri.devfest2018.items.common.DisplayableItem
 
 class DucksDelegatesActivity : AppCompatActivity() {
+
+  private val collapsedItems: MutableSet<Int> = hashSetOf()
+
   private lateinit var ducksList: RecyclerView
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +38,27 @@ class DucksDelegatesActivity : AppCompatActivity() {
           .setMessage("Ваша заявка на шлепки с уточками принята и ожидает обработки.")
           .setPositiveButton("Хорошо", null)
           .show()
+      },
+      onHeaderClickAction = {
+        if (collapsedItems.contains(it.titleRes)) {
+          collapsedItems.remove(it.titleRes)
+        } else {
+          collapsedItems.add(it.titleRes)
+        }
+        (ducksList.adapter as DucksDelegatesAdapter).apply { showData() }
       }
     )
   }
 
   private fun DucksDelegatesAdapter.showData() {
-    val data = getRubberDucks().plus(getDuckSlippers()).shuffled()
+    val data = mutableListOf<DisplayableItem>().apply {
+      val isRubberDucksCollapsed = collapsedItems.contains(R.string.rubber_ducks)
+      add(HeaderItem(isRubberDucksCollapsed, R.string.rubber_ducks))
+      if (!isRubberDucksCollapsed) addAll(getRubberDucks())
+      val isDuckSlippersCollapsed = collapsedItems.contains(R.string.slippers)
+      add(HeaderItem(isDuckSlippersCollapsed, R.string.slippers))
+      if (!isDuckSlippersCollapsed) addAll(getDuckSlippers())
+    }
     setData(data)
   }
 
