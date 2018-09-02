@@ -1,6 +1,3 @@
 <resources>
     <string name="app_name">DevFest2018</string>
-    <string name="slippers">Slippers</string>
-    <string name="rubber_ducks">Rubber Ducks</string>
-    <string name="mixed_ducks">Mixed Ducks</string>
 </resources>
