@@ -1,4 +1,4 @@
-package ru.rinekri.devfest2018.delegates
+package ru.rinekri.devfest2018.groupie
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
