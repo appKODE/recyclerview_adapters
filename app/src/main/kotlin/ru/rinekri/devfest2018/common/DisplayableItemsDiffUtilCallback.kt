@@ -1,8 +1,8 @@
 package ru.rinekri.devfest2018.common
 
 import android.support.v7.util.DiffUtil
+import ru.rinekri.devfest2018.items.HeaderItem
 import ru.rinekri.devfest2018.items.common.DisplayableItem
-
 
 class DisplayableItemsDiffUtilCallback(
   private val oldItems: List<DisplayableItem>,
@@ -18,10 +18,17 @@ class DisplayableItemsDiffUtilCallback(
   }
 
   override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-    return oldItems[oldItemPosition] == newItems[newItemPosition]
+    val oldItem = oldItems[oldItemPosition]
+    val newItem = newItems[newItemPosition]
+    return when {
+      oldItem is HeaderItem && newItem is HeaderItem -> true
+      else -> oldItem == newItem
+    }
   }
 
   override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-    return oldItems[oldItemPosition] == newItems[newItemPosition]
+    val oldItem = oldItems[oldItemPosition]
+    val newItem = newItems[newItemPosition]
+    return oldItem == newItem
   }
 }

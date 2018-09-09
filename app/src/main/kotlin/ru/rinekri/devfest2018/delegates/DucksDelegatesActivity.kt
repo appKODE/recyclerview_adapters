@@ -28,7 +28,7 @@ class DucksDelegatesActivity : AppCompatActivity() {
     }
   }
 
-  fun createAdapter(): DucksDelegatesAdapter {
+  private fun createAdapter(): DucksDelegatesAdapter {
     return DucksDelegatesAdapter(
       onDuckCountClickAction = {
         AlertDialog
@@ -36,14 +36,6 @@ class DucksDelegatesActivity : AppCompatActivity() {
           .setTitle("Спасибо!")
           .setMessage("Ваша заявка на уточку в количестве ${it.count} штук принята и ожидает обработки.")
           .setPositiveButton("Прекрасно", null)
-          .show()
-      },
-      onAdvertClickAction = {
-        AlertDialog
-          .Builder(this@DucksDelegatesActivity)
-          .setTitle("Готово!")
-          .setMessage("Ваш заказ на соль успешно оформлен, мы с вами свяжемся.")
-          .setPositiveButton("ОК", null)
           .show()
       },
       onSlipperClickAction = {
@@ -61,6 +53,14 @@ class DucksDelegatesActivity : AppCompatActivity() {
           collapsedItems.add(it.titleRes)
         }
         (ducksList.adapter as DucksDelegatesAdapter).apply { showData() }
+      },
+      onAdvertClickAction = {
+        AlertDialog
+          .Builder(this@DucksDelegatesActivity)
+          .setTitle("Готово!")
+          .setMessage("Ваш заказ на соль успешно оформлен, мы с вами свяжемся.")
+          .setPositiveButton("ОК", null)
+          .show()
       }
     )
   }
@@ -68,14 +68,12 @@ class DucksDelegatesActivity : AppCompatActivity() {
   private fun DucksDelegatesAdapter.showData() {
     val data = mutableListOf<DisplayableItem>().apply {
       add(advert)
-      add(HeaderItem(false, R.string.rubber_ducks))
-      if (!collapsedItems.contains(R.string.rubber_ducks)) {
-        addAll(getRubberDucks())
-      }
-      add(HeaderItem(false, R.string.slippers))
-      if (collapsedItems.contains(R.string.slippers)) {
-        addAll(getDuckSlippers())
-      }
+      val isRubberDucksCollapsed = collapsedItems.contains(R.string.rubber_ducks)
+      add(HeaderItem(isRubberDucksCollapsed, R.string.rubber_ducks))
+      if (!isRubberDucksCollapsed) addAll(getRubberDucks())
+      val isDuckSlippersCollapsed = collapsedItems.contains(R.string.slippers)
+      add(HeaderItem(isDuckSlippersCollapsed, R.string.slippers))
+      if (!isDuckSlippersCollapsed) addAll(getDuckSlippers())
     }
     setData(data)
   }
