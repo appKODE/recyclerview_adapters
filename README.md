@@ -1,0 +1,1 @@
+# recyclerview_adapters
